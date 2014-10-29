@@ -31,30 +31,32 @@ chrome.cookies.onChanged.addListener(function (info) {
 var doCookieSync = function(isPurge) {
   chrome.cookies.getAll({"domain":"glgroup.com"},function (cookies) {
     // Foreach glgroup.com cookie
-    for (var i=cookies.length; i > 0; i--) {
+    for (var i=cookies.length-1; i >= 0; i--) {
       // We are only looking for root level cookies (not subdomains)
-      if (cookies[i-1].domain != ".glgroup.com") {
+      if (cookies[i].domain != ".glgroup.com") {
         // Not a root cookie
         continue;
       }
       // Foreach domain configured
-      for (var c=config.glg_domains.length; c > 0; c--) {
-        var tmpCookie = cookies[c-1];
+      for (var c=config.glg_domains.length-1; c >= 0; c--) {
+        var tmpCookie = cookies[i];
         // If we're suppose to delete cookies
         if (isPurge) {
           // Set the URL so the API doesn't bark
-          tmpCookie.url = "https://" + config.glg_domains[c-1] + "/";
+          tmpCookie.url = "https://" + config.glg_domains[c] + "/";
           // Remove the cookie from the other domains
+          // console.log("Removing cookie: " + tmpCookie.name);
           chrome.cookies.remove({"url":tmpCookie.url,"name":tmpCookie.name});
         } else {
           // But if we're supposed to add the cookies
           // Change the domain of the cookie
-          tmpCookie.domain = "." + config.glg_domains[c-1];
+          tmpCookie.domain = "." + config.glg_domains[c];
           // Shove in a URL so the API doesn't complain
-          tmpCookie.url = "https://" + config.glg_domains[c-1] + "/";
+          tmpCookie.url = "https://" + config.glg_domains[c] + "/";
           // Delete fields that also make the API complain
           delete tmpCookie.hostOnly;
           delete tmpCookie.session;
+          // console.log("Adding cookie: " + tmpCookie.name);
           // Shove the rest of the cookie into the other domain
           chrome.cookies.set(tmpCookie);
         }
