@@ -1,0 +1,32 @@
+{
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self' 'unsafe-eval'",
+  "manifest_version": 2,
+  "name": "GLG SSO Cookie Duper",
+  "description": "Duplicate SSO Cookies to other GLG Domains",
+  "update_url": "https://rawgit.com/glg/sso_cookie_duper/master/update_chrome.xml",
+  "version": "0.0.1",
+  "background": {
+    "scripts": [
+      "config.js",
+      "js/main.js"
+    ]
+  },
+  "homepage_url": "https://github.com/glg/sso_cookie_duper/tree/master",
+  "web_accessible_resources": ["config.js","js/*","images/*"],
+  "icons": {
+    "16":"images/glg.png",
+    "48":"images/glg.png",
+    "128":"images/glg.png",
+    "256":"images/glg.png"
+  },
+  "permissions": [
+    "tabs",
+    "http://*/*",
+    "https://*/*",
+    "contextMenus",
+    "webNavigation",
+    "notifications",
+    "cookies",
+    "storage"
+  ]
+}
