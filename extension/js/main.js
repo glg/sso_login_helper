@@ -115,6 +115,17 @@ var filter = {
   urls: ["*://*.glgresearch.com/*"]
 };
 
+
+chrome.webRequest.onBeforeRequest.addListener(function (details) {
+  if (base64_hash) {
+    console.log("Base64 hash found")
+    return;
+  }
+  console.log('No SSO cookie, redirecting ', details.url);
+  return { redirectUrl: 'https://my.glgroup.com' }
+},filter,["blocking"]);
+
+
 chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
   if (!base64_hash) {
     return;
