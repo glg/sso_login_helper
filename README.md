@@ -1,9 +1,4 @@
-GLG SSO Cookie Duper
+GLG SSO Login Helper
 ===============
 
-This Simple Extension detects changes to a GLG SSO cookie.  If an update is detected this extension will copy all the glgroup.com cookies to other GLG domains.  Additionally, if we detect a logout event we remove the glgroup.com cookies from the other domains.  
-
-Currently we copy these cookies to:
-
-* *.glg.it
-* *.glgresearch.com
+This extension listens for login/logout events on the GLG User Portal.  It caches the user's information.  It then injects an Authorization header onto requests to [*.glgresearch.com] using the user's cached credentials
