@@ -1,13 +1,12 @@
+//
+var basic_auth_hash = "";
+
 // Create an event listener and if the GLG cookie changes
-// we update our user information
-
-var base64_hash = "";
-
-// When we detect changes to cookies
+// we update our user information when we detect changes to cookies
 chrome.cookies.onChanged.addListener(function (info) {
   // If the event type means it's setting or updating a cookie
   if (info.cause == "explicit") {
-    // And that cookie is from our root domain and the SSO glgSAM cookie
+    // ...And that cookie is from our root domain and the SSO glgSAM cookie
     // they must be on our SSO portal either logging in or refreshing
     // so lets copy the GLG cookies to our other domains
     if (info.cookie.domain == ".glgroup.com" && info.cookie.name == "glgSAM") {
@@ -18,17 +17,33 @@ chrome.cookies.onChanged.addListener(function (info) {
   }
   // If the cookie event is a removal
   if (info.cause == "expired_overwrite") {
-    // And the cookie is on our root and the singlepoint cookie then
+    // And the cookie is on our root and it is the singlepoint cookie then
     // this is happening because the user is logging out of the portal
     // so we delete our glgroup.com cookies from our other domains
     if (info.cookie.domain == ".glgroup.com" && info.cookie.name == "singlepoint") {
       console.log("Logout Detected");
-      // Go to the deleting
+      // Go do the deleting
       doCookieSync(true);
-      base64_hash = "";
+      chrome.storage.local.clear();
+      basic_auth_hash = "";
     }
   }
 });
+
+var doStoreUsernameFromCookie = function () {
+  chrome.cookies.getAll({"domain":"glgroup.com"},function (cookies) {
+    // Foreach glgroup.com cookie
+    for (var i=cookies.length-1; i >= 0; i--) {
+      if (cookies[i].domain != ".glgroup.com") {
+        // Not a root cookie
+        continue;
+      }
+      if (cookies[i].name == "glgSAM") {
+        chrome.storage.local.set({"username":cookies[i].value},doTryToHashCredentials);
+      }
+    }
+  });
+};
 
 // Copy cookies from glgroup.com to other domains
 var doCookieSync = function(isPurge) {
@@ -98,41 +113,59 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   doTryToHashCredentials();
 });
 
-
-
+// Try to get credentials from storage and build a hash
 var doTryToHashCredentials = function () {
+  // See if we have a username/password combo cached
   chrome.storage.local.get(["username","password"], function(stored) {
+    // If we have them cached
     if (stored && stored.username && stored.password) {
-      console.log("Caching credentials");
-      base64_hash = btoa(stored.username + ":" + stored.password);
+      // Convert them to a base64 encoded Basic Auth string and store
+      // it globally
+      basic_auth_hash = btoa(stored.username + ":" + stored.password);
     }
   });
 };
 
+// See if we have credentials cached when we first run to maybe
+// avoid the user getting prompted
+doTryToHashCredentials();
 
-// Event listener for requests - add credentials
+// Filter for which pages we should inject an Authorization header
 var filter = {
-  urls: ["*://*.glgresearch.com/*"]
+  urls: config.remote_login_urls
 };
 
+// The following will redirect you to the SSO portal if we don't have
+// your credentials
+// TODO:  Only redirect if we don't have your credentials AND we get
+//        a 401 suggesting you need them
+// FIXME:  Redirect user to the 'logged out' page of the portal
+//        because we actually need the login event in order
+//        to get the users info
+// chrome.webRequest.onBeforeRequest.addListener(function (details) {
+//   if (basic_auth_hash) {
+//     // console.log("Base64 hash found");
+//     return;
+//   }
+//   // console.log('No SSO cookie, redirecting ', details.url);
+//   return { redirectUrl: 'https://my.glgroup.com' };
+// },filter,["blocking"]);
 
-chrome.webRequest.onBeforeRequest.addListener(function (details) {
-  if (base64_hash) {
-    console.log("Base64 hash found")
-    return;
-  }
-  console.log('No SSO cookie, redirecting ', details.url);
-  return { redirectUrl: 'https://my.glgroup.com' }
-},filter,["blocking"]);
 
-
+// Before the web request sends headers to the server listen for those
+// events and determine if we can inject an auth header
 chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
-  if (!base64_hash) {
+  // If we don't have credentials for them we can't inject anything
+  if (!basic_auth_hash) {
     return;
   }
+  // Push a new header into the request that includes auth
   details.requestHeaders.push({
     "name": "Authorization",
-    "value": "Basic " + base64_hash
+    "value": "Basic " + basic_auth_hash
   });
+  // Return all the request headers
   return {requestHeaders: details.requestHeaders};
+  // Add our filter to the event listener and request blocking/requestHeaders
+  // permissions
 },filter,["blocking","requestHeaders"]);

@@ -2,9 +2,9 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self' 'unsafe-eval'",
   "manifest_version": 2,
   "name": "GLG Login Helper",
-  "description": "Use SSO authentication to other GLG Domains",
+  "description": "Use SSO authentication on other GLG Domains",
   "update_url": "https://rawgit.com/glg/sso_cookie_duper/master/update_chrome.xml",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "background": {
     "scripts": [
       "config.js",

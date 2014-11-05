@@ -6,6 +6,6 @@ config.glg_domains = [
 ];
 
 config.remote_login_urls = [
-  "http://jobs.glgresearch.com/surveys/",
-  "http://services.glgresearch.com/cerca/"
+  "*://*.glgroup.com/*",
+  "*://*.glgresearch.com/*"
 ];
