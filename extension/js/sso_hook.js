@@ -1,4 +1,4 @@
-// Move these to an appropriate configuration place
+// TODO: Move these to an appropriate configuration place
 var _sso_login_host = "customsso.glgroup.com";
 var _sso_login_path = "/public/login.php";
 

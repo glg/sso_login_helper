@@ -1,11 +1,12 @@
 var config = {};
 
-config.glg_domains = [
-  "glgresearch.com",
-  "glg.it"
-];
+// TODO: Probably nuking this functionality in a future release
+// config.glg_domains = [
+//   "glgresearch.com",
+//   "glg.it"
+// ];
 
 config.remote_login_urls = [
-  "*://*.glgroup.com/*",
+  "*://query.glgroup.com/*",
   "*://*.glgresearch.com/*"
 ];
