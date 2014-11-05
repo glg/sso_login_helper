@@ -4,7 +4,7 @@
   "name": "GLG Login Helper",
   "description": "Use SSO authentication on other GLG Domains",
   "update_url": "https://rawgit.com/glg/sso_cookie_duper/master/update_chrome.xml",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "background": {
     "scripts": [
       "config.js",

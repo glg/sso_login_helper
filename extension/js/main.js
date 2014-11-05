@@ -1,5 +1,7 @@
 // Where we store the Base64 encoded hash of the users credentials
 var basic_auth_hash = "";
+// Put in a check-safe to make sure we don't get in a redirect loop
+var isAlreadyPromptedToAuth = false;
 
 // Create an event listener and if the GLG cookie changes
 // we update our user information when we detect changes to cookies
@@ -27,8 +29,12 @@ chrome.cookies.onChanged.addListener(function (info) {
       console.log("Logout Detected");
       // Go do the deleting
       // doCookieSync(true);
+      // We clear the storage so there's no chance we shove creds into headers
       chrome.storage.local.clear();
+      // We clear our hash also
       basic_auth_hash = "";
+      // We now will allow an SSO redirect if the user is asked to auth
+      isAlreadyPromptedToAuth = false;
     }
   }
 });
@@ -114,10 +120,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     // If the event we receive is our password event
     if (request.name == "sso_password_submit") {
       // Store the password locally as a cache
-      chrome.storage.local.set({"password":request.sso_password});
+      chrome.storage.local.set({"password":request.sso_password},doTryToHashCredentials);
     }
   }
-  doTryToHashCredentials();
 });
 
 // Try to get credentials from storage and build a hash
@@ -144,19 +149,32 @@ var filter = {
 
 // The following will redirect you to the SSO portal if we don't have
 // your credentials
-// TODO:  Only redirect if we don't have your credentials AND we get
-//        a 401 suggesting you need them
-// FIXME:  Redirect user to the 'logged out' page of the portal
-//        because we actually need the login event in order
-//        to get the users info
-// chrome.webRequest.onBeforeRequest.addListener(function (details) {
-//   if (basic_auth_hash) {
-//     // console.log("Base64 hash found");
-//     return;
-//   }
-//   // console.log('No SSO cookie, redirecting ', details.url);
-//   return { redirectUrl: 'https://my.glgroup.com' };
-// },filter,["blocking"]);
+chrome.webRequest.onBeforeRequest.addListener(function (details) {
+  // If we already have credentials - no need to redirect user to auth
+  if (basic_auth_hash || isAlreadyPromptedToAuth) {
+    return;
+  }
+  console.info("No Login Information Detected");
+  isAlreadyPromptedToAuth = true;
+  return { redirectUrl: config.sso_logout_url };
+},filter,["blocking"]);
+
+// If we are asked for auth - something is weird - so, if we haven't
+// already redirected the user to auth.. try to open a new window
+// and trigger them to auth
+chrome.webRequest.onAuthRequired.addListener(function (details) {
+  // For whatever reason we've been prompted to login
+  // so redirect the user to login to the sso portal (once)
+  // this flag makes sure we don't spam the user
+  if (isAlreadyPromptedToAuth) {
+    return;
+  }
+  // make sure we don't spam
+  isAlreadyPromptedToAuth = true;
+  // open a new window to our auth portal
+  window.open(config.sso_logout_url);
+  return;
+},filter,["blocking"]);
 
 
 // Before the web request sends headers to the server listen for those
