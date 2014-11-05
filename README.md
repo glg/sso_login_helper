@@ -16,5 +16,5 @@ This extension:
 The following steps are all that's required for this plugin to work:
 
 * Install the plugin
-* Logout of the [GLG SSO Portal](https://my.glgroup.com/LogoutServlet)
+* [Logout](https://my.glgroup.com/LogoutServlet) of the [GLG SSO Portal](https://my.glgroup.com)
 * Login to the [GLG SSO Portal](https://my.glgroup.com)
