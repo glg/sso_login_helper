@@ -1,0 +1,88 @@
+#! /usr/bin/perl
+######################################################################
+## Author:      Benjamin Hudgens
+## Date:        November 6, 2014
+## Description: Quick script for swapping a merge from master
+##              over to a beta deployment
+######################################################################
+
+## Paths to the files we are going to manipulate for the beta
+my $chrome_update_xml = './update_chrome.xml';
+my $manifest_file = './extension/manifest.json';
+
+sub main {
+  ## If the files don't exist we punt and assume they aren't in the root dir
+  if (!-f $chrome_update_xml || !-f $manifest_file)
+  {
+    print STDERR "This script is not very smart - You need to run it from the root directory of the extension\n";
+    print STDERR "./tools/make_beta";
+    exit(1);
+  }
+  &updateExtensionUpdateFile();
+  &updateExtensionManifest();
+  # Move the Beta Readme over so if someone views this branch on the website it's more user friendly
+  # &runCommand("cp README_Beta.md README.md");
+}
+
+sub updateExtensionUpdateFile {
+  # Slurp in the update file
+  open(IN,"< $chrome_update_xml");
+  my @lines = <IN>;
+  close(IN);
+
+  # Open a temp file to accept our output
+  open(OUT,"> $chrome_update_xml.tmp");
+  # This pattern only exists on one line - but - swap master with beta
+  foreach my $line (@lines) {
+    $line =~ s/\/raw\/master/\/raw\/beta/;
+    print OUT $line;
+  }
+  # Close the file so it flushes to disk
+  close(OUT);
+  # Move the temp file onto the permanent
+  &runCommand("mv $chrome_update_xml.tmp $chrome_update_xml");
+}
+
+
+sub updateExtensionManifest {
+  # Now lets tweak the manifest file (Which is easy JSON)
+  use JSON -support_by_pp;
+
+  # Open the file and slurp it in
+  open(IN,"< $manifest_file");
+  my @mlines = <IN>;
+  close(IN);
+
+  # Throw the whole file into a single string
+  my $json;
+  foreach my $line (@mlines) {
+    $json .= $line;
+  }
+
+  # Convert the string to an object
+  my $manifest = from_json($json);
+
+  # Swap out the 'update_url' path to 'beta'
+  $manifest->{'update_url'} =~ s/master/beta/;
+
+  # Pretty print back into a string
+  my $output_json = to_json($manifest,{pretty => 1});
+
+  # Spit this out to a temp file
+  open(OUT,"> $manifest_file.tmp");
+  print OUT $output_json;
+  close(OUT);
+
+  # Cover the temp file back into place
+  &runCommand("mv $manifest_file.tmp $manifest_file");
+}
+
+sub runCommand {
+  my $cmd = shift;
+  #print "$cmd\n";
+  system($cmd);
+}
+
+&main();
+print "Done...\n";
+
