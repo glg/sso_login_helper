@@ -8,7 +8,7 @@
 
 ## Paths to the files we are going to manipulate for the beta
 my $chrome_update_xml = './update_chrome.xml';
-my $manifest_file = './chrome_extension/manifest.json';
+my $manifest_file = './extension/manifest.json';
 
 sub main {
   ## If the files don't exist we punt and assume they aren't in the root dir
