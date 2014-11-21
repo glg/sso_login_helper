@@ -9,6 +9,7 @@ var config = {};
 // URLS (wildcards supported) of URLS we want to inject basic auth headers in
 config.remote_login_urls = [
   "*://query.glgroup.com/*",
+  "*://baristagram.glgroup.com/*",
   "*://*.glgresearch.com/*"
 ];
 
