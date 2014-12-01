@@ -1,5 +1,4 @@
 {
-   "homepage_url" : "https://github.com/glg/sso_login_helper/tree/master",
    "permissions" : [
       "tabs",
       "identity",
@@ -15,38 +14,39 @@
       "cookies",
       "storage"
    ],
-   "version" : "0.0.4",
    "background" : {
       "scripts" : [
          "config.js",
          "js/main.js"
       ]
    },
-   "update_url" : "https://github.com/glg/sso_login_helper/raw/beta/update_chrome.xml",
-   "name" : "GLG Login Helper",
-   "icons" : {
-      "128" : "images/glg.png",
-      "256" : "images/glg.png",
-      "16" : "images/glg.png",
-      "48" : "images/glg.png"
-   },
-   "description" : "Use SSO authentication on other GLG Domains",
+   "update_url" : "https://github.com/glg/sso_login_helper/raw/master/update_chrome.xml",
+   "homepage_url" : "https://github.com/glg/sso_login_helper/tree/master",
    "content_security_policy" : "script-src 'self' 'unsafe-eval'; object-src 'self' 'unsafe-eval'",
+   "description" : "Use SSO authentication on other GLG Domains",
+   "web_accessible_resources" : [
+      "config.js",
+      "js/*",
+      "images/*"
+   ],
+   "name" : "GLG Login Helper",
+   "version" : "0.0.4",
+   "icons" : {
+      "16" : "images/glg.png",
+      "128" : "images/glg.png",
+      "48" : "images/glg.png",
+      "256" : "images/glg.png"
+   },
    "content_scripts" : [
       {
-         "run_at" : "document_end",
          "matches" : [
             "https://customsso.glgroup.com/*"
          ],
          "js" : [
             "js/sso_hook.js"
-         ]
+         ],
+         "run_at" : "document_end"
       }
-   ],
-   "web_accessible_resources" : [
-      "config.js",
-      "js/*",
-      "images/*"
    ],
    "manifest_version" : 2
 }
