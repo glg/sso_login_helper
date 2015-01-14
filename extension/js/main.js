@@ -1,7 +1,5 @@
 // Where we store the Base64 encoded hash of the users credentials
 var basic_auth_hash = "";
-// Put in a check-safe to make sure we don't get in a redirect loop
-var isAlreadyPromptedToAuth = false;
 
 // Create an event listener and if the GLG cookie changes
 // we update our user information when we detect changes to cookies
@@ -10,13 +8,9 @@ chrome.cookies.onChanged.addListener(function (info) {
   if (info.cause == "explicit") {
     // ...And that cookie is from our root domain and the SSO glgSAM cookie
     // they must be on our SSO portal either logging in or refreshing
-    // so lets copy the GLG cookies to our other domains
     if (info.cookie.domain == ".glgroup.com" && info.cookie.name == "glgSAM") {
       console.log("GLG Login Detected");
-      // TODO: Clean up this cookie code
-      // Sync our cookies
-      // doCookieSync();
-      // doStoreUsernameFromCookie();
+      // Set the username in storage
       chrome.storage.local.set({"username":info.cookie.value},doTryToHashCredentials);
     }
   }
@@ -27,14 +21,10 @@ chrome.cookies.onChanged.addListener(function (info) {
     // so we delete our glgroup.com cookies from our other domains
     if (info.cookie.domain == ".glgroup.com" && info.cookie.name == "singlepoint") {
       console.log("Logout Detected");
-      // Go do the deleting
-      // doCookieSync(true);
       // We clear the storage so there's no chance we shove creds into headers
       chrome.storage.local.clear();
       // We clear our hash also
       basic_auth_hash = "";
-      // We now will allow an SSO redirect if the user is asked to auth
-      isAlreadyPromptedToAuth = false;
     }
   }
 });
@@ -78,12 +68,10 @@ var filter = {
 // your credentials
 chrome.webRequest.onBeforeRequest.addListener(function (details) {
   // If we already have credentials - no need to redirect user to auth
-  if (basic_auth_hash || isAlreadyPromptedToAuth) {
+  if (basic_auth_hash) {
     return;
   }
   console.info("No Login Information Detected");
-  // XXX: Based on Desktop Support feedback - always force a login
-  // isAlreadyPromptedToAuth = true;
   return { redirectUrl: config.sso_logout_url };
 },filter,["blocking"]);
 
@@ -91,15 +79,6 @@ chrome.webRequest.onBeforeRequest.addListener(function (details) {
 // already redirected the user to auth.. try to open a new window
 // and trigger them to auth
 chrome.webRequest.onAuthRequired.addListener(function (details) {
-  // For whatever reason we've been prompted to login
-  // so redirect the user to login to the sso portal (once)
-  // this flag makes sure we don't spam the user
-  if (isAlreadyPromptedToAuth) {
-    return;
-  }
-  // make sure we don't spam
-  // XXX: Based on Desktop Support feedback - always force a login
-  // isAlreadyPromptedToAuth = true;
   // open a new window to our auth portal
   window.open(config.sso_logout_url);
   return;
