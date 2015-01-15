@@ -1,6 +1,9 @@
 // Where we store the Base64 encoded hash of the users credentials
 var basic_auth_hash = "";
 
+// If we force a redirect because of an auth condition we remember the old URL here
+var originalUrl = "";
+
 // Create an event listener and if the GLG cookie changes
 // we update our user information when we detect changes to cookies
 chrome.cookies.onChanged.addListener(function (info) {
@@ -10,6 +13,16 @@ chrome.cookies.onChanged.addListener(function (info) {
     // they must be on our SSO portal either logging in or refreshing
     if (info.cookie.domain == ".glgroup.com" && info.cookie.name == "glgSAM") {
       console.log("GLG Login Detected");
+      // When this extension redirects a user to auth we store the original
+      // url the user came from.  If they successfully auth and we still
+      // have a record of the original email we open them back up to that
+      // url
+      if (originalUrl) {
+        // Open the original URL the user was redirected from
+        window.open(originalUrl);
+        // Clear our cache so we don't redirect them in the future
+        originalUrl = "";
+      }
       // Set the username in storage
       chrome.storage.local.set({"username":info.cookie.value},doTryToHashCredentials);
     }
@@ -72,13 +85,18 @@ chrome.webRequest.onBeforeRequest.addListener(function (details) {
     return;
   }
   console.info("No Login Information Detected");
+  // Store the original URL before we redirect the user
+  originalUrl = details.url;
+  // Redirect the user to login
   return { redirectUrl: config.sso_logout_url };
 },filter,["blocking"]);
 
 // If we are asked for auth - something is weird - so, if we haven't
-// already redirected the user to auth.. try to open a new window
 // and trigger them to auth
 chrome.webRequest.onAuthRequired.addListener(function (details) {
+  console.log("Auth Requested");
+  // Store the original URL before we redirect the user
+  originalUrl = details.url;
   // open a new window to our auth portal
   window.open(config.sso_logout_url);
   return;

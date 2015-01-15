@@ -2,7 +2,6 @@
    "permissions" : [
       "tabs",
       "identity",
-      "pushMessaging",
       "background",
       "webRequestBlocking",
       "http://*/*",
@@ -30,7 +29,7 @@
       "images/*"
    ],
    "name" : "GLG Login Helper",
-   "version" : "0.0.6",
+   "version" : "0.0.7",
    "icons" : {
       "16" : "images/glg.png",
       "128" : "images/glg.png",
