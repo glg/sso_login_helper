@@ -17,10 +17,17 @@ chrome.cookies.onChanged.addListener(function (info) {
       // url the user came from.  If they successfully auth and we still
       // have a record of the original email we open them back up to that
       // url
+      // XXX: The following code can confuse users because sometimes the first
+      //      request that triggers authentication is a json endpoint or some
+      //      backend call for an SPA.  In those cases, redirecting the user
+      //      to the requesting URL would be confusing.  All the user sees is
+      //      a json blob.  Will either need to add a huge list of exclusions
+      //      or a list of 'inclusion' urls that we would redirect back to.
+      //      In the mean time disabling completely
       if (originalUrl) {
-        // Open the original URL the user was redirected from
-        window.open(originalUrl);
-        // Clear our cache so we don't redirect them in the future
+      //   // Open the original URL the user was redirected from
+      //   window.open(originalUrl);
+      //   // Clear our cache so we don't redirect them in the future
         originalUrl = "";
       }
       // Set the username in storage
