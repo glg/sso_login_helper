@@ -37,20 +37,20 @@ chrome.cookies.onChanged.addListener(function (info) {
       // Set the username in storage
       chrome.storage.local.set({"username":info.cookie.value},doTryToHashCredentials);
     }
+  }
 
-    // If the cookie event is a removal
-    if (info.cause == "expired_overwrite") {
-      // And the cookie is on our root and it is the singlepoint cookie then
-      // this is happening because the user is logging out of the portal
-      // so we delete our glgroup.com cookies from our other domains
-      if (info.cookie.domain == ".glgroup.com" && info.cookie.name == "singlepoint") {
-        console.log("Logout Detected");
-        //     // We clear the storage so there's no chance we shove creds into headers
-        chrome.storage.local.clear();
-        // We clear our hash also
-        username = "";
-        password = "";
-      }
+  // If the cookie event is a removal
+  if (info.cause == "expired_overwrite") {
+    // And the cookie is on our root and it is the singlepoint cookie then
+    // this is happening because the user is logging out of the portal
+    // so we delete our glgroup.com cookies from our other domains
+    if (info.cookie.domain == ".glgroup.com" && info.cookie.name == "singlepoint") {
+      console.log("Logout Detected");
+      //     // We clear the storage so there's no chance we shove creds into headers
+      chrome.storage.local.clear();
+      // We clear our hash also
+      username = "";
+      password = "";
     }
   }
 });
