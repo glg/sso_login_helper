@@ -93,7 +93,7 @@ chrome.webRequest.onAuthRequired.addListener(function (details,callback) {
   }
   // If this isn't a background request and we couldn't get auth
   // we need to open a new window for the user to authenticate via SSO
-  if (details.type === "main_frame") {
+  if (details.type === "main_frame" && username && password) {
     username = "";
     password = "";
     window.open(config.sso_logout_url);
