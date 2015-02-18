@@ -19,7 +19,6 @@
          "js/main.js"
       ]
    },
-   "update_url" : "https://github.com/glg/sso_login_helper/raw/master/update_chrome.xml",
    "homepage_url" : "https://github.com/glg/sso_login_helper/tree/master",
    "content_security_policy" : "script-src 'self' 'unsafe-eval'; object-src 'self' 'unsafe-eval'",
    "description" : "Use SSO authentication on other GLG Domains",
@@ -29,7 +28,7 @@
       "images/*"
    ],
    "name" : "GLG Login Helper",
-   "version" : "0.0.10",
+   "version" : "0.0.11",
    "icons" : {
       "16" : "images/glg.png",
       "128" : "images/glg.png",
