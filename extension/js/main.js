@@ -1,8 +1,12 @@
-// Where we store the Base64 encoded hash of the users credentials
-var basic_auth_hash = "";
+// UN/PW Cache for the user
+var username = "";
+var password = "";
 
 // If we force a redirect because of an auth condition we remember the old URL here
 var originalUrl = "";
+
+// Cache of calls already authed
+var authedCache = {};
 
 // Create an event listener and if the GLG cookie changes
 // we update our user information when we detect changes to cookies
@@ -34,21 +38,6 @@ chrome.cookies.onChanged.addListener(function (info) {
       chrome.storage.local.set({"username":info.cookie.value},doTryToHashCredentials);
     }
   }
-  // XXX: Don't remove cache even if users log out.. cause why?  If they login
-  //      we update anyway and we log them out on auth errors
-  // If the cookie event is a removal
-  // if (info.cause == "expired_overwrite") {
-  //   // And the cookie is on our root and it is the singlepoint cookie then
-  //   // this is happening because the user is logging out of the portal
-  //   // so we delete our glgroup.com cookies from our other domains
-  //   if (info.cookie.domain == ".glgroup.com" && info.cookie.name == "singlepoint") {
-  //     console.log("Logout Detected");
-  //     // We clear the storage so there's no chance we shove creds into headers
-  //     chrome.storage.local.clear();
-  //     // We clear our hash also
-  //     basic_auth_hash = "";
-  //   }
-  // }
 });
 
 // We inject a sniffer (content_script) into our main SSO page which will send us
@@ -73,6 +62,8 @@ var doTryToHashCredentials = function () {
       // Convert them to a base64 encoded Basic Auth string and store
       // it globally
       basic_auth_hash = btoa(stored.username + ":" + stored.password);
+      username = stored.username;
+      password = stored.password;
     }
   });
 };
@@ -86,46 +77,68 @@ var filter = {
   urls: config.remote_login_urls
 };
 
-// The following will redirect you to the SSO portal if we don't have
-// your credentials
-chrome.webRequest.onBeforeRequest.addListener(function (details) {
-  // If we already have credentials - no need to redirect user to auth
-  if (basic_auth_hash) {
-    return;
-  }
-  console.info("No Login Information Detected");
-  // Store the original URL before we redirect the user
-  originalUrl = details.url;
-  // Redirect the user to login
-  return { redirectUrl: config.sso_logout_url };
-},filter,["blocking"]);
-
 // If we are asked for auth - something is weird - so, if we haven't
 // and trigger them to auth
-chrome.webRequest.onAuthRequired.addListener(function (details) {
+chrome.webRequest.onAuthRequired.addListener(function (details,callback) {
   console.log("Auth Requested");
-  // Store the original URL before we redirect the user
-  originalUrl = details.url;
-  // open a new window to our auth portal
-  window.open(config.sso_logout_url);
+  // debugger;
+  // FIXME: If we are no longer going to inject a header we no longer
+  //        need to store the basic_auth_hash OR do all this decoding
+  //        ..
+  //        Really this whole thing needs to be refactore
+  if (username && password && !authedCache[details.requestId]) {
+    // Cache this attempt to make sure we don't loop with bad credentials
+    authedCache[details.requestId] = true;
+    callback({authCredentials: {"username": username,"password": password}});
+  }
+  // If this isn't a background request and we couldn't get auth
+  // we need to open a new window for the user to authenticate via SSO
+  if (details.type === "main_frame") {
+    username = "";
+    password = "";
+    window.open(config.sso_logout_url);
+  }
+  // Now probably need to prompt the user for auth and fallback to the original
+  // browser behavior
+  callback();
   return;
-},filter,["blocking"]);
+},filter,["asyncBlocking"]);
+
+// XXX: This refactor might mean that we no longer need any of this
+//      code
+// The following will redirect you to the SSO portal if we don't have
+// your credentials
+// chrome.webRequest.onBeforeRequest.addListener(function (details) {
+//   // If we already have credentials - no need to redirect user to auth
+//   console.log("onBeforeRequest");
+//   return;
+//   if (basic_auth_hash) {
+//     return;
+//   }
+//   console.info("No Login Information Detected");
+//   // Store the original URL before we redirect the user
+//   originalUrl = details.url;
+//   // Redirect the user to login
+//   return { redirectUrl: config.sso_logout_url };
+// },filter,["blocking"]);
 
 
 // Before the web request sends headers to the server listen for those
 // events and determine if we can inject an auth header
-chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
-  // If we don't have credentials for this user we can't inject anything
-  if (!basic_auth_hash) {
-    return;
-  }
-  // Push a new header into the request that includes auth
-  details.requestHeaders.push({
-    "name": "Authorization",
-    "value": "Basic " + basic_auth_hash
-  });
-  // Return all the request headers
-  return {requestHeaders: details.requestHeaders};
-  // Add our filter to the event listener and request blocking/requestHeaders
-  // permissions
-},filter,["blocking","requestHeaders"]);
+// chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
+//   // If we don't have credentials for this user we can't inject anything
+//   console.log("onBeforeSendHeaders");
+//   console.dir(details);
+//   if (!basic_auth_hash) {
+//     return;
+//   }
+//   // Push a new header into the request that includes auth
+//   // details.requestHeaders.push({
+//   //   "name": "Authorization",
+//   //   "value": "Basic " + basic_auth_hash
+//   // });
+//   // Return all the request headers
+//   return {requestHeaders: details.requestHeaders};
+//   // Add our filter to the event listener and request blocking/requestHeaders
+//   // permissions
+// },filter,["blocking","requestHeaders"]);
