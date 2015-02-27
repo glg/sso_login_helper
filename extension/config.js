@@ -10,3 +10,8 @@ config.remote_login_urls = [
 
 // The logout URL of the SSO portal
 config.sso_logout_url = "https://my.glgroup.com/LogoutServlet";
+
+// URLS we completely ignore
+config.ssoExclusionUrls = [
+  "http: //west.glgresearch.com/pi"
+];

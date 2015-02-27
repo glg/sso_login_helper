@@ -1,0 +1,26 @@
+#! /usr/bin/env bash
+
+DIR_EXTENSION="./extension"
+DIR_TMP="./$$.tmp"
+
+# Find our extension
+[ -d ${DIR_EXTENSION} ] || (echo Run from root directory &&  exit 1)
+
+# Make a scratch dir and move our manifest to it
+mkdir -p ${DIR_TMP}
+mv ${DIR_EXTENSION}/manifest.json  ${DIR_TMP}
+
+# Split on new lines
+IFS=$'\n'
+# Go through the manifest and remove the update_url line
+# and re-add the manifest to the extension without it
+for line in $(cat ${DIR_TMP}/manifest.json); do
+  [[ ${line} == *"update_url"* ]] && continue
+  echo "${line}" >> ${DIR_EXTENSION}/manifest.json
+done
+# Package up our extension
+[ -f extension.zip ] && rm extension.zip
+zip -r extension.zip ${DIR_EXTENSION}
+# Move our manifest back
+cp ${DIR_TMP}/manifest.json ${DIR_EXTENSION}/manifest.json
+rm -rf ${DIR_TMP}

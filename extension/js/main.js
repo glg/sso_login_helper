@@ -78,17 +78,20 @@ var filter = {
 // and trigger them to auth
 chrome.webRequest.onAuthRequired.addListener(function (details,callback) {
   console.log("Auth Requested");
-  // debugger;
-  // FIXME: If we are no longer going to inject a header we no longer
-  //        need to store the basic_auth_hash OR do all this decoding
-  //        ..
-  //        Really this whole thing needs to be refactore
   if (username && password && !authedCache[details.requestId]) {
     // Cache this attempt to make sure we don't loop with bad credentials
     authedCache[details.requestId] = true;
     // Try to login with our credentials
     callback({authCredentials: {"username": username,"password": password}});
     return;
+  }
+  // If this url is excluded from sso or ldap auth we send the normal behavior
+  // This is controlled in the config file
+  for (var c=config.ssoExclusionUrls.length-1; c >= 0; c--) {
+    if (~details.url.indexOf(config.ssoExclusionUrls[c])) {
+      callback();
+      return;
+    }
   }
   // If this isn't a background request and we couldn't get auth
   // we need to open a new window for the user to authenticate via SSO
