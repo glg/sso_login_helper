@@ -13,5 +13,9 @@ config.sso_logout_url = "https://my.glgroup.com/LogoutServlet";
 
 // URLS we completely ignore
 config.ssoExclusionUrls = [
-  "http: //west.glgresearch.com/pi"
+  "west.glgresearch.com/pi",
+  "east.glgresearch.com/pi",
+  "europe.glgresearch.com/pi",
+  "asia.glgresearch.com/pi",
+  "services.glgresearch.com/pi"
 ];
