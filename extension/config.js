@@ -5,6 +5,8 @@ config.remote_login_urls = [
   "*://query.glgroup.com/*",
   "*://mosaic.glgroup.com/*",
   "*://baristagram.glgroup.com/*",
+  "*://localhost/*",
+  "*://*.localhost/*",
   "*://*.glgresearch.com/*"
 ];
 
@@ -13,6 +15,7 @@ config.sso_logout_url = "https://my.glgroup.com/LogoutServlet";
 
 // URLS we completely ignore
 config.ssoExclusionUrls = [
+  "services.glgresearch.com/taxonomy",
   "west.glgresearch.com/pi",
   "east.glgresearch.com/pi",
   "europe.glgresearch.com/pi",
