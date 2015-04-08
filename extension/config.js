@@ -4,9 +4,8 @@ var config = {};
 config.remote_login_urls = [
   "*://query.glgroup.com/*",
   "*://mosaic.glgroup.com/*",
+  "*://ccomplete.glgroup.com/*",
   "*://baristagram.glgroup.com/*",
-  "*://localhost/*",
-  "*://*.localhost/*",
   "*://*.glgresearch.com/*"
 ];
 
