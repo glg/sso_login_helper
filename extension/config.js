@@ -5,6 +5,7 @@ config.remote_login_urls = [
   "*://query.glgroup.com/*",
   "*://mosaic.glgroup.com/*",
   "*://ccomplete.glgroup.com/*",
+  "*://extccomplete.glgroup.com/*",
   "*://baristagram.glgroup.com/*",
   "*://*.glgresearch.com/*"
 ];
