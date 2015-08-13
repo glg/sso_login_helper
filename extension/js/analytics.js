@@ -36,5 +36,3 @@ var doSendGoogleAnalyticsPageView = function doSendGoogleAnalyticsPageView(event
     "title": user.username
   });
 };
-
-doSendGoogleAnalyticsEvent('Login','Toggle - Disabled');
