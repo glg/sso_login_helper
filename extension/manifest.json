@@ -16,6 +16,8 @@
    "background" : {
       "scripts" : [
          "config.js",
+         "js/http.js",
+         "js/user.js",
          "js/main.js"
       ]
    },
@@ -29,7 +31,7 @@
       "images/*"
    ],
    "name" : "GLG Login Helper",
-   "version" : "0.0.21",
+   "version" : "0.0.23",
    "icons" : {
       "16" : "images/glg.png",
       "128" : "images/glg.png",
@@ -39,7 +41,7 @@
    "content_scripts" : [
       {
          "matches" : [
-            "https://customsso.glgroup.com/*"
+            "https://glg.okta.com/*"
          ],
          "js" : [
             "js/sso_hook.js"

@@ -1,13 +1,38 @@
-// TODO: Move these to an appropriate configuration place
-var _sso_login_host = "customsso.glgroup.com";
-var _sso_login_path = "/public/login.php";
+var ssoLoginHosts = [];
+
+// Store any paths that would represent the login page.  Don't inject hooks
+// on any other page
+ssoLoginHosts[0] = {
+  host: "glg.okta.com",
+  path: "/login/login.htm"
+};
+ssoLoginHosts[1] = {
+  host: "glg.okta.com",
+  path: "/"
+};
 
 // This looks nasty - I hate it
-(function () {
-  // If we are not on our main SSO portal we should punt
-  if ( !window || window.location.host != _sso_login_host || window.location.pathname != _sso_login_path ) {
+(function() {
+
+  // Run through all our hosts and paths and see if we need to inject our
+  // hooks on this page.  Assume we didn't find it until proven otherwise
+  var _hostAndPathFound = false;
+  var _c = ssoLoginHosts.length;
+  while (_c--) {
+    if (
+      window &&
+      window.location.host === ssoLoginHosts[_c].host &&
+      window.location.pathname === ssoLoginHosts[_c].path
+    ) {
+      _hostAndPathFound = true;
+      break;
+    }
+  }
+
+  if (!_hostAndPathFound) {
     return;
   }
+
   console.info("SSO Login Page Detected");
 
   // It is possible for the DOM to not be loaded when we are called.  This can
@@ -16,32 +41,25 @@ var _sso_login_path = "/public/login.php";
   // element on the main SSO page.
   var domLoadTimer = setInterval(doCheckForForm, 100);
 
-  function doCheckForForm () {
+  function doCheckForForm() {
     // If we find the form
     if (typeof document.forms != "undefined") {
       // Clear our check timer
       clearInterval(domLoadTimer);
 
-      var sso_form = document.forms[0];
+      var ssoForm = document.forms[0];
       // Now listen for the submit event and if it's fired
-      // store whatever password is sent to us.  We don't trust
-      // the username/password combo until the cookie is set
-      // so all we are after is the password
-      sso_form.addEventListener("submit",function (t) {
+      // store whatever password is sent to us.
+      ssoForm.addEventListener("submit", function(t) {
         // Build an object to send to our background page
-        // TODO:  Instead of grabbing the element by name it would
-        //        be more ideal to grab the 'password' field on the page.
-        //        It is less likely to break if the portal page changes.
-        //        However, right now the page and url are statically configured
-        //        inside this script ... so, we'll be back in here if they change
-        //        the portal too much.
         var data = {
-          "name":"sso_password_submit",
-          "sso_password":sso_form.elements["singlepoint-password"].value
+          "name": "ssoLoginSubmit",
+          "ssoUsername": ssoForm.elements.username.value,
+          "ssoPassword": ssoForm.elements.password.value
         };
         // Fire off an event to our background page with the password entered
-        chrome.runtime.sendMessage("",data);
-      },false);
+        chrome.runtime.sendMessage("", data);
+      }, false);
     }
   }
 })();

@@ -11,7 +11,10 @@ config.remote_login_urls = [
 ];
 
 // The logout URL of the SSO portal
-config.sso_logout_url = "https://my.glgroup.com/LogoutServlet";
+config.sso_logout_url = "https://glg.okta.com/login/signout";
+
+config.epildap = "https://services.glgresearch.com/epildap";
+config.epildapUsernameLookup = "https://services.glgresearch.com/epildap-public";
 
 // URLS we completely ignore
 config.ssoExclusionUrls = [
