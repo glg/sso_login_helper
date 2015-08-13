@@ -6,7 +6,7 @@ var appDetails = chrome.app.getDetails();
 doSendGoogleAnalyticsEvent('Loading', 'Version: ' + appDetails.version);
 setInterval(function doGoogleAnalyticsPing() {
   doSendGoogleAnalyticsEvent('Ping', 'Version: ' + appDetails.version);
-}, 900000);
+}, 240000);
 
 
 // Cache of calls already authed
