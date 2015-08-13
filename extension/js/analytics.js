@@ -25,7 +25,7 @@ var doSendGoogleAnalyticsEvent = function doSendGoogleAnalyticsEvent(category, e
     analyticsUsername = "anonymous";
   }
   ga('send', 'event', category, event, user.username, {
-    'nonInteraction': 1,
+    // 'nonInteraction': 1,
     'page': page
   });
 };
