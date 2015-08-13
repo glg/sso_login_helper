@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
 	<app appid='pdmomaninhajhidjgpjglhlmnjbcknlo'>
-    <updatecheck codebase='https://github.com/glg/sso_login_helper/raw/master/extension.crx' version='0.0.21'/>
+    <updatecheck codebase='https://github.com/glg/sso_login_helper/raw/master/extension.crx' version='0.0.23'/>
 	</app>
 </gupdate>
