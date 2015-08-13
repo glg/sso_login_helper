@@ -52,6 +52,7 @@ var User = (function() {
       // Send a request to epildap and get the user's data
       http(_url, null, function(err, data) {
         if (err) {
+          doSendGoogleAnalyticsEvent('Error', 'Failed Grabbing Ldap Info - Http Post');
           console.error("Error grabbing LDAP Info:", err);
           return;
         }
@@ -61,6 +62,7 @@ var User = (function() {
           this.metadata = JSON.parse(data);
           // Make sure we only got one result (results are an array)
           if (this.metadata.length > 1) {
+            doSendGoogleAnalyticsEvent('Error', 'Too Many Results');
             console.error("Userdata came back with too many results", this.metadata);
             this.metadata = "";
             return;
@@ -68,6 +70,7 @@ var User = (function() {
           // Store the first result since all results come back as an array
           this.metadata = this.metadata[0];
         } catch (Exception) {
+          doSendGoogleAnalyticsEvent('Error', 'Failed Grabbing Ldap Info - Exception');
           console.error("Yikes, couldn't snag ldap info for the user:", Exception);
           return;
         }
@@ -111,6 +114,7 @@ chrome.cookies.onChanged.addListener(function(info) {
   if (info.cause === "expired_overwrite") {
     if (info.cookie.domain === "glg.okta.com" && info.cookie.name === "sid") {
       console.log("Logout Detected");
+      doSendGoogleAnalyticsEvent('Logout', 'Portal');
       user.doLogout();
     }
   }
@@ -137,6 +141,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     // In this case we need to search ldap for the sAMAccountName.  This may
     // trigger a white box but it's the price we pay.
     if (~request.ssoUsername.indexOf('@')) {
+      doSendGoogleAnalyticsEvent('Login', 'Email Address: ' + request.ssoUsername);
       var _url = [config.epildapUsernameLookup, "/emailToUsername?email=", request.ssoUsername].join('');
       http(_url, null, function(err, responseText) {
         // Don't throw exceptions if we get an invalid response
@@ -144,6 +149,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
           // Parse the respone and store it
           var _obj = JSON.parse(responseText);
           if (!_obj || !_obj[0] || !_obj[0].sAMAccountName || err) {
+            doSendGoogleAnalyticsEvent('Error', 'No Sam Account: ' + request.ssoUsername);
             return;
           }
           // Store the sAMAccountName as the username of the object.  We'll need
@@ -153,12 +159,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
             "password": request.ssoPassword
           }, user.init.bind(user));
         } catch (Exception) {
+          doSendGoogleAnalyticsEvent('Error', 'Chrome Storage of Credentials: ' + request.ssoUsername);
           console.error("Storing LDAP Response for principal name puked:", Exception);
           return;
         }
       });
     } else {
       // Store the password locally as a cache
+      doSendGoogleAnalyticsEvent('Login', 'Username Only: ' + request.ssoUsername);
       chrome.storage.local.set({
         "username": request.ssoUsername,
         "password": request.ssoPassword

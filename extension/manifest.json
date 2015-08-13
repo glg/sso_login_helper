@@ -1,53 +1,52 @@
 {
-   "permissions" : [
-      "tabs",
-      "identity",
-      "background",
-      "webRequestBlocking",
-      "http://*/*",
-      "https://*/*",
-      "contextMenus",
-      "webNavigation",
-      "notifications",
-      "webRequest",
-      "cookies",
-      "storage"
-   ],
-   "background" : {
-      "scripts" : [
-         "config.js",
-         "js/http.js",
-         "js/user.js",
-         "js/main.js"
-      ]
-   },
-   "update_url" : "https://github.com/glg/sso_login_helper/raw/master/update_chrome.xml",
-   "homepage_url" : "https://github.com/glg/sso_login_helper/tree/master",
-   "content_security_policy" : "script-src 'self' 'unsafe-eval'; object-src 'self' 'unsafe-eval'",
-   "description" : "Use SSO authentication on other GLG Domains",
-   "web_accessible_resources" : [
+  "permissions": [
+    "tabs",
+    "identity",
+    "background",
+    "webRequestBlocking",
+    "http://*/*",
+    "https://*/*",
+    "contextMenus",
+    "webNavigation",
+    "notifications",
+    "webRequest",
+    "cookies",
+    "storage"
+  ],
+  "background": {
+    "scripts": [
       "config.js",
-      "js/*",
-      "images/*"
-   ],
-   "name" : "GLG Login Helper",
-   "version" : "0.0.23",
-   "icons" : {
-      "16" : "images/glg.png",
-      "128" : "images/glg.png",
-      "48" : "images/glg.png",
-      "256" : "images/glg.png"
-   },
-   "content_scripts" : [
-      {
-         "matches" : [
-            "https://glg.okta.com/*"
-         ],
-         "js" : [
-            "js/sso_hook.js"
-         ],
-         "run_at" : "document_end"
-      }
-   ],
-   "manifest_version" : 2
+      "js/http.js",
+      "js/user.js",
+      "js/analytics.js",
+      "js/main.js"
+    ]
+  },
+  "update_url": "https://github.com/glg/sso_login_helper/raw/master/update_chrome.xml",
+  "homepage_url": "https://github.com/glg/sso_login_helper/tree/master",
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
+  "description": "Use SSO authentication on other GLG Domains",
+  "web_accessible_resources": [
+    "config.js",
+    "js/*",
+    "images/*"
+  ],
+  "name": "GLG Login Helper",
+  "version": "1.0.0",
+  "icons": {
+    "16": "images/glg.png",
+    "128": "images/glg.png",
+    "48": "images/glg.png",
+    "256": "images/glg.png"
+  },
+  "content_scripts": [{
+    "matches": [
+      "https://glg.okta.com/*"
+    ],
+    "js": [
+      "js/sso_hook.js"
+    ],
+    "run_at": "document_end"
+  }],
+  "manifest_version": 2
 }
