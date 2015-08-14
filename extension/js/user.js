@@ -87,13 +87,13 @@ var User = (function() {
           var glgcookie = {
             name: "glguserinfo",
             path: "/",
-            expirationDate: ((new Date()).getTime()/1000) + 1000000,
+            expirationDate: ((new Date()).getTime() / 1000) + 1000000,
             value: btoa(JSON.stringify(cookieUserInfo))
           };
 
           var c = config.glgDomains.length;
           while (c--) {
-            glgcookie.url = ["https://",config.glgDomains[c]].join('');
+            glgcookie.url = ["https://", config.glgDomains[c]].join('');
             glgcookie.domain = config.glgDomains[c];
             chrome.cookies.set(glgcookie);
           }
@@ -140,11 +140,23 @@ var User = (function() {
 // Create an event listener and if the GLG cookie changes
 // we update our user information
 chrome.cookies.onChanged.addListener(function(info) {
+  // console.debug(info);
   if (info.cause === "expired_overwrite") {
     if (info.cookie.domain === "glg.okta.com" && info.cookie.name === "sid") {
       console.log("Logout Detected");
       doSendGoogleAnalyticsEvent('Logout', 'Portal');
       user.doLogout();
+    }
+  }
+
+  // If users clear their cookies for our domains.. log them out of okta also
+  if (info.cause === "explicit" && info.removed) {
+    var c = config.glgDomains.length;
+    while (c--) {
+      if (info.cookie.domain === config.glgDomains[c] && info.cookie.name === "glguserinfo") {
+        console.log("Logout Detected");
+        window.open(config.sso_logout_url);
+      }
     }
   }
 });
