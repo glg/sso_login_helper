@@ -12,6 +12,11 @@
  * @return   {object}        This auto invokes itself.  user.$info is available
  *                           globally to an extension
  */
+
+if (typeof(doSendGoogleAnalyticsEvent) !== "function") {
+  var doSendGoogleAnalyticsEvent = function() {};
+}
+
 var User = (function() {
 
   /**
@@ -69,6 +74,30 @@ var User = (function() {
           }
           // Store the first result since all results come back as an array
           this.metadata = this.metadata[0];
+          var cookieUserInfo = {
+            username: this.username,
+            firstname: this.metadata.givenName,
+            lastname: this.metadata.sn,
+            email: this.metadata.mail,
+            sAMAccountName: this.metadata.sAMAccountName,
+            department: this.metadata.department,
+            userPrincipalName: this.metadata.userPrincipalName,
+          };
+
+          var glgcookie = {
+            name: "glguserinfo",
+            path: "/",
+            expirationDate: ((new Date()).getTime()/1000) + 1000000,
+            value: btoa(JSON.stringify(cookieUserInfo))
+          };
+
+          var c = config.glgDomains.length;
+          while (c--) {
+            glgcookie.url = ["https://",config.glgDomains[c]].join('');
+            glgcookie.domain = config.glgDomains[c];
+            chrome.cookies.set(glgcookie);
+          }
+
         } catch (Exception) {
           doSendGoogleAnalyticsEvent('Error', 'Failed Grabbing Ldap Info - Exception');
           console.error("Yikes, couldn't snag ldap info for the user:", Exception);
