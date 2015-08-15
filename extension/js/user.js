@@ -155,10 +155,12 @@ chrome.cookies.onChanged.addListener(function(info) {
     while (c--) {
       if (info.cookie.domain === config.glgDomains[c] && info.cookie.name === "glguserinfo") {
         console.log("Logout Detected");
-        window.open(config.sso_logout_url);
+        // TODO: Make a config var
+        window.open("https://services.glgresearch.com/logout");
       }
     }
   }
+
 });
 
 // We inject a sniffer (content_script) into our main SSO page which will send us
