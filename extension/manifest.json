@@ -32,7 +32,7 @@
     "images/*"
   ],
   "name": "GLG Login Helper",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "icons": {
     "16": "images/glg.png",
     "128": "images/glg.png",

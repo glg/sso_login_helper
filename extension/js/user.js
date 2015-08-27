@@ -144,7 +144,8 @@ chrome.cookies.onChanged.addListener(function(info) {
   if (info.cause === "expired_overwrite") {
     if (info.cookie.domain === "glg.okta.com" && info.cookie.name === "sid") {
       console.log("Logout Detected");
-      window.open("https://services.glgresearch.com/logout");
+      // TODO: Not sure this works as we expect.  Disable for now
+      // window.open("https://services.glgresearch.com/logout");
       doSendGoogleAnalyticsEvent('Logout', 'Portal');
       user.doLogout();
     }
