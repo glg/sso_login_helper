@@ -32,6 +32,7 @@ config.glgDomains = [
 
 // URLS we completely ignore
 config.ssoExclusionUrls = [
+  "services.glgresearch.com/logout",
   "services.glgresearch.com/taxonomy",
   "west.glgresearch.com/pi",
   "east.glgresearch.com/pi",
