@@ -17,6 +17,10 @@ config.sso_logout_url = "https://glg.okta.com/login/signout";
 // We grab user meta data from this endpoint
 config.epildap = "https://services.glgresearch.com/epildap";
 
+config.jwtCookieName = "jwt"
+config.jwtAuthUrl = "/auth"
+config.jwtGetTokenUrl = "https://ship.glgresearch.com/jwt-ldap-auto-login/getToken"
+
 // To support Okta we need a place publically to lookup user data for people
 // who login with their 'email' address.  The folks who setup okta
 // did NOT set it up to use the userPrincipalName.  The users are truly

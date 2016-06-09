@@ -8,17 +8,14 @@
 //   Returns
 //     nothing
 var http = function http(url, data, callback) {
-  // Default is get
-  var _requestType = "GET";
-  // If data is not empty the request is a POST
-  if (data) {
-    _requestType = "POST";
-  }
   // Create our request
   var _request = new XMLHttpRequest();
   // Open the request with the url
-  _request.open(_requestType, url, true);
-  // Create a handler for when things change
+  _request.open(data ? "POST" : "GET", url, true);
+  
+  if (data) {
+    _request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  }
   _request.onreadystatechange = function onReadyStateChangeHandler() {
     // Skip any requests that that aren't success and ready
     if (_request.readyState !== 4 || _request.status >= 400) {

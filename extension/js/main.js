@@ -1,3 +1,5 @@
+"use strict";
+
 // If we force a redirect because of an auth condition we remember the old URL here
 var originalUrl = "";
 
@@ -17,6 +19,48 @@ var urlCache = {};
 var filter = {
   urls: config.remote_login_urls
 };
+
+chrome.webRequest.onHeadersReceived.addListener(details => {
+  if (details.type === "main_frame") {
+    let isJWTAuthRequired = false;
+    details.responseHeaders.forEach(header => {
+      isJWTAuthRequired = isJWTAuthRequired || (header.name === "X-Starphleet-Service" && header.value === config.jwtAuthUrl)
+    });
+    console.log("isJWTAuthRequired", isJWTAuthRequired);
+    if (isJWTAuthRequired) {
+      const emailAddress = user.metadata.mail || void 0;
+      const url = details.url;
+      http(config.jwtGetTokenUrl, JSON.stringify({ emailAddress, url }), (err, res) => {
+        try {
+          if (err) {
+            throw new Error("http error getting cookie");
+          }
+          
+          const jwtTokenResponse = JSON.parse(res);
+
+          const cookie = {
+            name: config.jwtCookieName,
+            path: "/",
+            expirationDate: ((new Date()).getTime() / 1000) + 30,
+            value: jwtTokenResponse.token
+          };
+
+          let c = config.glgDomains.length;
+          while (c--) {
+            cookie.url = ["https://", config.glgDomains[c]].join('');
+            cookie.domain = config.glgDomains[c];
+            chrome.cookies.set(cookie);
+          }
+          chrome.tabs.reload(details.tabId);
+
+        } catch (e) {
+          return console.error("Unable to get JWT Token", e, e.stack);
+        }
+      })
+    }
+  }
+  console.log(details);
+}, filter, ["responseHeaders"]);
 
 // If we are asked for auth - something is weird - so, if we haven't
 // authed yet we inject our creds and try

@@ -24,15 +24,15 @@ var doSendGoogleAnalyticsEvent = function doSendGoogleAnalyticsEvent(category, e
   if (user.username === "") {
     analyticsUsername = "anonymous";
   }
-  ga('send', 'event', category, event, user.username, {
+  ga('send', 'event', category, event, analyticsUsername, {
     // 'nonInteraction': 1,
     'page': page
   });
 };
 
-var doSendGoogleAnalyticsPageView = function doSendGoogleAnalyticsPageView(event) {
-  ga('send', 'pageview', {
-    "page": event,
-    "title": user.username
-  });
-};
+// var doSendGoogleAnalyticsPageView = function doSendGoogleAnalyticsPageView(event) {
+//   ga('send', 'pageview', {
+//     "page": event,
+//     "title": user.username
+//   });
+// };
