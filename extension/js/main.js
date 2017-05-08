@@ -65,7 +65,7 @@ chrome.webRequest.onHeadersReceived.addListener(details => {
 // If we are asked for auth - something is weird - so, if we haven't
 // authed yet we inject our creds and try
 chrome.webRequest.onAuthRequired.addListener(function(details, callback) {
-  console.log("Auth Requested");
+  console.log("Auth Requested: ", details.url);
   if (user.username && user.password && !authedCache[details.requestId]) {
     doSendGoogleAnalyticsEvent('Login', 'Attempt', details.url);
     // Cache this attempt to make sure we don't loop with bad credentials

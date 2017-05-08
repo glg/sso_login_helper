@@ -4,6 +4,7 @@ var config = {};
 config.remote_login_urls = [
   "*://query.glgroup.com/*",
   "*://vega.glgroup.com/*",
+  "*://vega2.glgroup.com/*",
   "*://mosaic.glgroup.com/*",
   "*://ccomplete.glgroup.com/*",
   "*://extccomplete.glgroup.com/*",
