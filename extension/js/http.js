@@ -1,18 +1,10 @@
-// http
-//   Make an xmlrpc request
-//
-//   Accepts
-//     - url for request
-//     - data to post
-//     - callback function
-//   Returns
-//     nothing
-var http = function http(url, data, callback) {
+/*eslint no-unused-vars: "off"*/
+const http = (url, data, callback) => {
   // Create our request
   var _request = new XMLHttpRequest();
   // Open the request with the url
   _request.open(data ? "POST" : "GET", url, true);
-  
+
   if (data) {
     _request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   }

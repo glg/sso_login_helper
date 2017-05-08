@@ -20,9 +20,6 @@
 *.tar
 *.zip
 
-# Silly lazy script to push changes to a network share
-deploy_beta_in_austin
-
 # Logs and databases #
 ######################
 *.log
@@ -31,6 +28,8 @@ deploy_beta_in_austin
 
 # OS generated files #
 ######################
+runme
+test
 .DS_Store
 .DS_Store?
 ._*
@@ -38,3 +37,4 @@ deploy_beta_in_austin
 .Trashes
 ehthumbs.db
 Thumbs.db
+node_modules

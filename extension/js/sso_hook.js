@@ -1,28 +1,34 @@
-var ssoLoginHosts = [];
+/*global chrome*/
 
-// Store any paths that would represent the login page.  Don't inject hooks
-// on any other page
-ssoLoginHosts[0] = {
-  host: "glg.okta.com",
-  path: "/login/login.htm"
-};
-ssoLoginHosts[1] = {
-  host: "glg.okta.com",
-  path: "/"
-};
+/**
+ * Store any host and path matches that would represent the OKTA
+ * login page.  We should never get run on any page outside
+ * of these because of the extension manifest but this guard
+ * is on the content side just-in-case.
+ */
+const ssoLoginHosts = [{
+    host: "glg.okta.com",
+    path: "/login/login.htm"
+  },
+  {
+    host: "glg.okta.com",
+    path: "/"
+  }
+];
 
-// This looks nasty - I hate it
 (function() {
-
-  // Run through all our hosts and paths and see if we need to inject our
-  // hooks on this page.  Assume we didn't find it until proven otherwise
-  var _hostAndPathFound = false;
-  var _c = ssoLoginHosts.length;
+  /**
+   * Run through all our hosts and paths and see if we need to inject our
+   * hooks on this page.  We assume we shouldn't run until we prove
+   * we should
+   */
+  let _hostAndPathFound = false;
+  let _c = ssoLoginHosts.length;
   while (_c--) {
     if (
-      window &&
-      window.location.host === ssoLoginHosts[_c].host &&
-      window.location.pathname === ssoLoginHosts[_c].path
+      window
+      && window.location.host === ssoLoginHosts[_c].host
+      && window.location.pathname === ssoLoginHosts[_c].path
     ) {
       _hostAndPathFound = true;
       break;
@@ -33,6 +39,7 @@ ssoLoginHosts[1] = {
     return;
   }
 
+  /*eslint no-console: "off"*/
   console.info("SSO Login Page Detected");
 
   // It is possible for the DOM to not be loaded when we are called.  This can
@@ -43,23 +50,20 @@ ssoLoginHosts[1] = {
 
   function doCheckForForm() {
     // If we find the form
-    if (typeof document.forms != "undefined") {
+    if (typeof document.forms !== "undefined"
+      && document.forms[0]
+      && document.forms[0].elements.username) {
       // Clear our check timer
       clearInterval(domLoadTimer);
 
       var ssoForm = document.forms[0];
       // Now listen for the submit event and if it's fired
       // store whatever password is sent to us.
-      ssoForm.addEventListener("submit", function(t) {
-        // Build an object to send to our background page
-        var data = {
-          "name": "ssoLoginSubmit",
-          "ssoUsername": ssoForm.elements.username.value,
-          "ssoPassword": ssoForm.elements.password.value
-        };
-        // Fire off an event to our background page with the password entered
-        chrome.runtime.sendMessage("", data);
-      }, false);
+      ssoForm.addEventListener("submit", () => chrome.runtime.sendMessage("", {
+        "name": "ssoLoginSubmit",
+        "ssoUsername": ssoForm.elements.username.value,
+        "ssoPassword": ssoForm.elements.password.value
+      }), false);
     }
   }
-})();
+}());
