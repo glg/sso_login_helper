@@ -20,10 +20,10 @@ const filter = {
 chrome.webRequest.onHeadersReceived.addListener(details => {
   if (details.type === "main_frame") {
     let isJWTAuthRequired = false;
-    details.responseHeaders.forEach(header => {
-      isJWTAuthRequired = isJWTAuthRequired
-        || header.name === "X-Starphleet-Service" && header.value === config.jwtAuthUrl;
-    });
+    // details.responseHeaders.forEach(header => {
+    //   isJWTAuthRequired = isJWTAuthRequired
+    //     || header.name === "X-Starphleet-Service" && header.value === config.jwtAuthUrl;
+    // });
     if (isJWTAuthRequired) {
       const email = user.metadata.mail || null;
       http(config.jwtGetTokenUrl, JSON.stringify({ email }), (err, res) => {
