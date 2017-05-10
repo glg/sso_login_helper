@@ -1,3 +1,4 @@
+/*global chrome*/
 /**
  * @function User
  * @abstract A dropin module for grabbing and caching GLG user information

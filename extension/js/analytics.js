@@ -1,4 +1,4 @@
-/*global user, ga*/
+/*global user, ga, chrome*/
 /*eslint no-unused-vars: "off"*/
 // Standard Google Universal Analytics code
 (function(i, s, o, g, r, a, m) {
@@ -13,6 +13,19 @@
   m.parentNode.insertBefore(a, m);
 })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga'); // Note: https protocol here
 
+/** Grab the user info from the SSO Plugin cache */
+const getUserInfo = () => new Promise((resolve, reject) => {
+  const domain = ".glgresearch.com";
+  const name = "glguserinfo";
+  chrome.cookies.getAll({ domain, name }, cookies => {
+    try {
+      const _user = JSON.parse(atob(cookies[0].value));
+      resolve(_user);
+    } catch (e) {
+      reject();
+    }
+  });
+});
 
 ga('create', 'UA-61162931-3', 'auto');
 ga('set', 'checkProtocolTask', () => {
@@ -20,21 +33,6 @@ ga('set', 'checkProtocolTask', () => {
 });
 ga('require', 'displayfeatures');
 
-const doSendGoogleAnalyticsEvent = (category, event, page) => {
-  const _page = page || "";
-  var analyticsUsername = user.username;
-  if (user.username === "") {
-    analyticsUsername = "anonymous";
-  }
-  ga('send', 'event', category, event, analyticsUsername, {
-    // 'nonInteraction': 1,
-    page: _page
-  });
-};
-
-// var doSendGoogleAnalyticsPageView = function doSendGoogleAnalyticsPageView(event) {
-//   ga('send', 'pageview', {
-//     "page": event,
-//     "title": user.username
-//   });
-// };
+const doSendGoogleAnalyticsEvent = (category, event, page) => getUserInfo()
+  .then(user => user && user.username || "UnknownUser")
+  .then(username => ga('send', 'event', category, event, username, { page }));
