@@ -12,9 +12,6 @@
  * @return   {object}        This auto invokes itself.  user.$info is available
  *                           globally to an extension
  */
-if (typeof doSendGoogleAnalyticsEvent !== "function") {
-  var doSendGoogleAnalyticsEvent = function() {};
-}
 
 var User = (function() {
 
