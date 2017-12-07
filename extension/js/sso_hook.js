@@ -1,17 +1,17 @@
 /*global chrome*/
 
 /**
- * Store any host and path matches that would represent the OKTA
+ * Store any host and path matches that would represent the Microsoft
  * login page.  We should never get run on any page outside
  * of these because of the extension manifest but this guard
  * is on the content side just-in-case.
  */
 const ssoLoginHosts = [{
-    host: "glg.okta.com",
-    path: "/login/login.htm"
+    host: "login.microsoftonline.com",
+    path: "common/oauth2/authorize"
   },
   {
-    host: "glg.okta.com",
+    host: "login.microsoftonline.com",
     path: "/"
   }
 ];
@@ -34,7 +34,6 @@ const ssoLoginHosts = [{
       break;
     }
   }
-
   if (!_hostAndPathFound) {
     return;
   }
@@ -50,20 +49,26 @@ const ssoLoginHosts = [{
 
   function doCheckForForm() {
     // If we find the form
-    if (typeof document.forms !== "undefined"
+    if (typeof document.forms !== "undefined" 
       && document.forms[0]
       && document.forms[0].elements.username) {
+      
       // Clear our check timer
       clearInterval(domLoadTimer);
+      let ssoForm = document.forms[0]
 
-      var ssoForm = document.forms[0];
       // Now listen for the submit event and if it's fired
       // store whatever password is sent to us.
-      ssoForm.addEventListener("submit", () => chrome.runtime.sendMessage("", {
-        "name": "ssoLoginSubmit",
-        "ssoUsername": ssoForm.elements.username.value,
-        "ssoPassword": ssoForm.elements.password.value
-      }), false);
+      // There are two pages with a submit event: the username page and the password page.
+      // If the password field is not blank, then we want to listen for the submit event 
+      // since the user is about to login at this point.
+      if (ssoForm.elements.passwd != "") {
+        ssoForm.addEventListener("submit", () => chrome.runtime.sendMessage("", {
+          "name": "ssoLoginSubmit",
+          "ssoUsername": ssoForm.elements.loginfmt.value,
+          "ssoPassword": ssoForm.elements.passwd.value
+        }), false);
+      }
     }
   }
 }());

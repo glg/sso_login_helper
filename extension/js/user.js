@@ -139,7 +139,7 @@ var User = (function() {
 chrome.cookies.onChanged.addListener(function(info) {
   // console.debug(info);
   if (info.cause === "expired_overwrite") {
-    if (info.cookie.domain === "glg.okta.com" && info.cookie.name === "sid") {
+    if (info.cookie.domain === "www.office.com" && info.cookie.name === "OH.SID") {
       console.log("Logout Detected");
       // TODO: Not sure this works as we expect.  Disable for now
       // window.open("https://services.glgresearch.com/logout");
@@ -148,7 +148,7 @@ chrome.cookies.onChanged.addListener(function(info) {
     }
   }
 
-  // If users clear their cookies for our domains.. log them out of okta also
+  // If users clear their cookies for our domains.. log them out microsoft also
   if (info.cause === "explicit" && info.removed) {
     var c = config.glgDomains.length;
     while (c--) {
