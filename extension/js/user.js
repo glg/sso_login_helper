@@ -139,7 +139,7 @@ var User = (function() {
 chrome.cookies.onChanged.addListener(function(info) {
   // console.debug(info);
   if (info.cause === "expired_overwrite") {
-    if (info.cookie.domain === "www.office.com" && info.cookie.name === "OH.SID") {
+    if ((info.cookie.domain === "www.office.com" && info.cookie.name === "OH.SID") || (info.cookie.domain === "glg.okta.com" && info.cookie.name === "sid")) {
       console.log("Logout Detected");
       // TODO: Not sure this works as we expect.  Disable for now
       // window.open("https://services.glgresearch.com/logout");

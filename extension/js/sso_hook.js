@@ -13,6 +13,14 @@ const ssoLoginHosts = [{
   {
     host: "login.microsoftonline.com",
     path: "/"
+  },
+  {
+    host: "glg.okta.com",
+    path: "/login/login.htm"
+  },
+  {
+    host: "glg.okta.com",
+    path: "/"
   }
 ];
 
@@ -59,10 +67,18 @@ const ssoLoginHosts = [{
 
       // Now listen for the submit event and if it's fired
       // store whatever password is sent to us.
-      // There are two pages with a submit event: the username page and the password page.
+      if (ssoLoginHosts[_c].host == 'glg.okta.com') {
+        ssoForm.addEventListener("submit", () => chrome.runtime.sendMessage("", {
+          "name": "ssoLoginSubmit",
+          "ssoUsername": ssoForm.elements.username.value,
+          "ssoPassword": ssoForm.elements.password.value
+        }), false);
+      }
+
+      // There are two pages with a submit event in the microsoft login: the username page and the password page.
       // If the password field is not blank, then we want to listen for the submit event 
       // since the user is about to login at this point.
-      if (ssoForm.elements.passwd != "") {
+      else if (ssoLoginHosts[_c].host == 'login.microsoftonline.com' && ssoForm.elements.passwd != "") {
         ssoForm.addEventListener("submit", () => chrome.runtime.sendMessage("", {
           "name": "ssoLoginSubmit",
           "ssoUsername": ssoForm.elements.loginfmt.value,
