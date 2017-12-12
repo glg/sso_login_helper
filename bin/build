@@ -1,0 +1,20 @@
+#! /bin/bash
+
+rm -rf build/
+mkdir -p build/images
+
+# make sure the various manifests are all synced w/ the version in package.json
+bin/sync-versions
+
+# copy css, images, etc over
+cp extension/* build
+cp extension/images/* build/images
+cp extension/js/* build/js
+
+# We copy all of the built js assets into the public folder since the app also tries to realtime load in
+# js & env updates since the crx autodeploy otherwise is really slow...
+cp build/js/*.js public/
+
+# build the final crx asset...
+bin/crx-make.sh ./build extension.pem
+mv build.crx public/

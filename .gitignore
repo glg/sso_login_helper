@@ -41,4 +41,3 @@ node_modules
 
 public/build.crx
 public/*.js
-build
