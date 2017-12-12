@@ -1,5 +1,5 @@
 {
-  "version": "1.0.13",
+  "version": "1.0.14",
   "permissions": [
     "tabs",
     "identity",
@@ -35,19 +35,21 @@
   "name": "GLG Login Helper",
   "icons": {
     "16": "images/glg.png",
-    "128": "images/glg.png",
     "48": "images/glg.png",
+    "128": "images/glg.png",
     "256": "images/glg.png"
   },
-  "content_scripts": [{
-    "matches": [
-      "https://login.microsoftonline.com/*",
-      "https://glg.okta.com/*"
-    ],
-    "js": [
-      "js/sso_hook.js"
-    ],
-    "run_at": "document_end"
-  }],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://login.microsoftonline.com/*",
+        "https://glg.okta.com/*"
+      ],
+      "js": [
+        "js/sso_hook.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
   "manifest_version": 2
 }

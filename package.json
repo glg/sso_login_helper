@@ -1,0 +1,28 @@
+{
+  "name": "sso_login_helper",
+  "version": "1.0.14",
+  "main": "index.js",
+  "repository": "git@github.com:glg/sso_login_helper.git",
+  "author": "Carolyn Paulik <cpaulik@glgroup.com>",
+  "license": "MIT",
+  "scripts": {
+  	"postinstall": "bin/build",
+    "build": "bin/build",
+    "watch": "watch 'yarn run build' ./src --wait=10"
+  },
+  "devDependencies": {
+    "watch": "^1.0.2",
+    "yarn": "^1.3.2"
+  },
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^8.0.0",
+    "browserify": "^14.5.0",
+    "envhandlebars": "^1.3.1"
+  },
+  "engines": {
+  	"node": "8.7.0"
+  }
+}

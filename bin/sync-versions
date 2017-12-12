@@ -1,0 +1,18 @@
+#! /usr/bin/env node
+
+const fs = require('fs');
+
+// Updates all of the various version numbers to the one set in the package config
+// since manually syncing them is error prone and makes for 'fun' deployment debugging sessions
+const newVersion = JSON.parse(fs.readFileSync('./package.json')).version;
+
+// Plugin manifest file
+const manifest = JSON.parse(fs.readFileSync('extension/manifest.json'));
+manifest.version = newVersion;
+fs.writeFileSync('extension/manifest.json', JSON.stringify(manifest, null, 2));
+
+// update_chrome.xml configuration
+let xmlConfig = fs.readFileSync('public/update_chrome.xml', 'utf8');
+const currentVersion = xmlConfig.match( /version='(.+)'\s/i )[1];
+xmlConfig = xmlConfig.replace(currentVersion, newVersion);
+fs.writeFileSync('public/update_chrome.xml', xmlConfig);
