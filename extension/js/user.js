@@ -139,7 +139,7 @@ var User = (function() {
 chrome.cookies.onChanged.addListener(function(info) {
   // console.debug(info);
   if (info.cause === "expired_overwrite") {
-    if ((info.cookie.domain === "www.office.com" && info.cookie.name === "OH.SID") || (info.cookie.domain === "glg.okta.com" && info.cookie.name === "sid")) {
+    if ((info.cookie.domain === "login.microsoftonline.com" && info.cookie.name === "buid") || (info.cookie.domain === "glg.okta.com" && info.cookie.name === "sid")) {
       console.log("Logout Detected");
       // TODO: Not sure this works as we expect.  Disable for now
       // window.open("https://services.glgresearch.com/logout");
@@ -184,6 +184,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     // trigger a white box but it's the price we pay.
     if (~request.ssoUsername.indexOf('@')) {
       doSendGoogleAnalyticsEvent('Login', 'Email Address: ' + request.ssoUsername);
+      request.ssoUsername = "mastover@glgroup.com";
       var _url = [config.epildapUsernameLookup, "/emailToUsername?email=", request.ssoUsername].join('');
       http(_url, null, function(err, responseText) {
         // Don't throw exceptions if we get an invalid response

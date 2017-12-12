@@ -17,6 +17,8 @@ const filter = {
   urls: config.remote_login_urls
 };
 
+console.log("THIS IS A BACKGROUND LOG!!!!");
+
 chrome.webRequest.onHeadersReceived.addListener(details => {
   if (details.type === "main_frame") {
     let isJWTAuthRequired = false;
