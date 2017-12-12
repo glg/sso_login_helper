@@ -14,7 +14,7 @@ const config = {
 
   // The logout URL of the SSO portal
   sso_logout_url: "https://glg.okta.com/login/signout",
-  sso_logout_url_ms: "https://login.microsoftonline.com/common/oauth2/logout",
+  sso_logout_url_ms: "https://login.microsoftonline.com/common/oauth2/logout?post_logout_redirect_uri=https%3a%2f%2flogin.microsoftonline.com",
   epildap: "https://services.glgresearch.com/epildap",
 
   jwtCookieName: "jwt",

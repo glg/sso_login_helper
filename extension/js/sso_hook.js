@@ -77,7 +77,6 @@ const ssoLoginHosts = [{
       }
     }
     else if (ssoLoginHosts[_c].host == 'login.microsoftonline.com') {
-      console.log("attempting...");
       if (typeof document.forms !== "undefined" && document.forms[0] && document.forms[0].elements.passwd && document.forms[0].elements.passwd.value) {
         clearInterval(domLoadTimer);
         // There are two pages with a submit event in the microsoft login: the username page and the password page.
@@ -88,7 +87,6 @@ const ssoLoginHosts = [{
         let submitButton = document.querySelectorAll('[type="submit"]')[0];
         let ssoForm = document.forms[0]
         submitButton.addEventListener("click", () => {
-          console.log("Clicked. Login: ", loginField.value, "Pass: ",ssoForm.elements.passwd.value)
           chrome.runtime.sendMessage("", { "name": "ssoLoginSubmit", 
           "ssoUsername": loginField.value, 
           "ssoPassword": ssoForm.elements.passwd.value })

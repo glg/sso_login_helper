@@ -17,8 +17,6 @@ const filter = {
   urls: config.remote_login_urls
 };
 
-console.log("THIS IS A BACKGROUND LOG!!!!");
-
 chrome.webRequest.onHeadersReceived.addListener(details => {
   if (details.type === "main_frame") {
     let isJWTAuthRequired = false;
@@ -91,7 +89,7 @@ chrome.webRequest.onAuthRequired.addListener(function(details, callback) {
   if (details.type === "main_frame" && (!urlCache[details.url] || user.username && user.password)) {
     doSendGoogleAnalyticsEvent('Login', 'Prompt', details.url);
     urlCache[details.url] = true;
-    window.open(config.sso_logout_url);
+    window.open(config.sso_logout_url_ms);
   }
   // Now probably need to prompt the user for auth and fallback to the original
   // browser behavior

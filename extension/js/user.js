@@ -137,10 +137,14 @@ var User = (function() {
 // Create an event listener and if the GLG cookie changes
 // we update our user information
 chrome.cookies.onChanged.addListener(function(info) {
-  // console.debug(info);
+  if (info.cookie.domain === "login.microsoftonline.com" && info.cause==="overwrite" && info.cookie.name==="ESTSLOGOUTREDIRECT")  {
+      console.info("Logout Detected");
+      doSendGoogleAnalyticsEvent('Logout', 'MSPortal');
+      user.doLogout();
+  }
   if (info.cause === "expired_overwrite") {
-    if ((info.cookie.domain === "login.microsoftonline.com" && info.cookie.name === "buid") || (info.cookie.domain === "glg.okta.com" && info.cookie.name === "sid")) {
-      console.log("Logout Detected");
+    if (info.cookie.domain === "glg.okta.com" && info.cookie.name === "sid") {
+      console.info("Logout Detected");
       // TODO: Not sure this works as we expect.  Disable for now
       // window.open("https://services.glgresearch.com/logout");
       doSendGoogleAnalyticsEvent('Logout', 'Portal');
@@ -153,7 +157,7 @@ chrome.cookies.onChanged.addListener(function(info) {
     var c = config.glgDomains.length;
     while (c--) {
       if (info.cookie.domain === config.glgDomains[c] && info.cookie.name === "glguserinfo") {
-        console.log("Logout Detected");
+        console.info("Logout Detected");
         // TODO: Make a config var
         window.open("https://services.glgresearch.com/logout");
       }
@@ -184,7 +188,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     // trigger a white box but it's the price we pay.
     if (~request.ssoUsername.indexOf('@')) {
       doSendGoogleAnalyticsEvent('Login', 'Email Address: ' + request.ssoUsername);
-      request.ssoUsername = "mastover@glgroup.com";
       var _url = [config.epildapUsernameLookup, "/emailToUsername?email=", request.ssoUsername].join('');
       http(_url, null, function(err, responseText) {
         // Don't throw exceptions if we get an invalid response
