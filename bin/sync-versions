@@ -13,6 +13,10 @@ fs.writeFileSync('extension/manifest.json', JSON.stringify(manifest, null, 2));
 
 // update_chrome.xml configuration
 let xmlConfig = fs.readFileSync('public/update_chrome.xml', 'utf8');
-const currentVersion = xmlConfig.match( /version='(.+)'\s/i )[1];
+/**
+ * Regex:
+ *   version='1.0.13'/
+ */
+const currentVersion = xmlConfig.match(/version='(.+)'\//i )[1];
 xmlConfig = xmlConfig.replace(currentVersion, newVersion);
 fs.writeFileSync('public/update_chrome.xml', xmlConfig);
