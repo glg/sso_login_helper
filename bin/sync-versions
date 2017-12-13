@@ -7,7 +7,7 @@ const fs = require('fs');
 const newVersion = JSON.parse(fs.readFileSync('./package.json')).version;
 
 // Plugin manifest file
-const manifest = JSON.parse(fs.readFileSync('extension/manifest.json'));
+const manifest = JSON.parse(fs.readFileSync('build/manifest.json'));
 manifest.version = newVersion;
 fs.writeFileSync('extension/manifest.json', JSON.stringify(manifest, null, 2));
 

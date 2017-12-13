@@ -7,13 +7,13 @@ mkdir public
 
 # make sure the various manifests are all synced w/ the version in package.json
 cp update_chrome.xml ./public
-bin/sync-versions
 
 # copy css, images, etc over
 cp extension/* build
 cp extension/images/* build/images
 cp extension/js/* build/js
 
+bin/sync-versions
 
 # build the final crx asset...
 bin/crx-make.sh ./build extension.pem
