@@ -1,6 +1,0 @@
-#!/bin/bash
-
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --pack-extension=./build --pack-extension-key=./extension.pem
-
-rm public/build.crx
-mv build.crx public/
