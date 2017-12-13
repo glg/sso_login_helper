@@ -3,6 +3,7 @@
 rm -rf build/
 mkdir -p build/images
 mkdir -p build/js
+mkdir public
 
 # make sure the various manifests are all synced w/ the version in package.json
 cp update_chrome.xml ./public
