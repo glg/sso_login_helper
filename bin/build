@@ -5,6 +5,7 @@ mkdir -p build/images
 mkdir -p build/js
 
 # make sure the various manifests are all synced w/ the version in package.json
+cp update_chrome.xml ./public
 bin/sync-versions
 
 # copy css, images, etc over
