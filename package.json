@@ -1,6 +1,6 @@
 {
   "name": "sso_login_helper",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "main": "index.js",
   "repository": "git@github.com:glg/sso_login_helper.git",
   "author": "Carolyn Paulik <cpaulik@glgroup.com>",
