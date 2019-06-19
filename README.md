@@ -9,9 +9,15 @@ This extension:
 
 ## How to Setup
 The following steps are all that's required for this plugin to work:
-- Install the plugin
-- [Logout](https://glg.okta.com/login/signout) of the [GLG SSO Portal](https://my.glgroup.com)
-- Login to the [Okta SSO Portal](https://glg.okta.com)
+- [Install the plugin](https://chrome.google.com/webstore/detail/glg-login-helper/jjplhohhmnecolkkhofjgbaginidmmal?authuser=1)
+
+> You don't do anything active.  Login to Microsoft at any time and the extension will detect that and enable itself
+  The extension will send you to the appropriate page the first time it detects it doesn't know your password and _COULD_ have helped.
+
+  You can click here to force log yourself out, once you log back in, the plugin should detect the login:
+                    
+   https://login.microsoftonline.com/common/oauth2/logout?post_logout_redirect_uri=https%3a%2f%2flogin.microsoftonline.com
+
 
 ## Info For Developers
 Some of the meta data is made available in a cookie set against our domains.  The meta data about the user can be retrieved here using some form of the following:
