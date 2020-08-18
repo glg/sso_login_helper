@@ -19,7 +19,7 @@ const config = {
 
   jwtCookieName: "jwt",
   jwtAuthUrl: "/auth",
-  jwtGetTokenUrl: "http://services.glgresearch.com/jwt-generator/generate",
+  jwtGetTokenUrl: "https://services.glgresearch.com/jwt-generator/generate",
 
   // To support Okta we need a place publically to lookup user data for people
   // who login with their 'email' address.  The folks who setup okta
